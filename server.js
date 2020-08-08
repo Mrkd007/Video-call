@@ -3,7 +3,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const { v4: uuidV4 } = require('uuid');
-const { Socket } = require('dgram');
+const PORT = process.env.PORT || 4000;
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -13,12 +13,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:room', (req, res) => {
+    // res.render('/home/krishna/Documents/importants/My Project/Zoom-Clone/views/room.ejs', { roomId: req.params.room })
     res.render('room', { roomId: req.params.room })
 });
 
 io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
-        console.log(roomId, userId);
         socket.join(roomId);
         socket.to(roomId).broadcast.emit('user-connected', userId);
 
@@ -28,4 +28,6 @@ io.on('connection', socket => {
     })
 })
 
-server.listen(4000, '192.168.1.4');
+server.listen(PORT, function() {
+    console.log("server is running on port", PORT)
+});
